@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#218838">
+<title>FoodWise — Eat Smart. Waste Less.</title>
+<style>
+    .event-logo {
+    display: flex;
+    justify-content: right;
+    align-items: right;
+    padding: 5px;
+    background: #ffffff;
+}
+
+.event-logo img {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    object-fit: contain;
+}
+
+:root{--primary:#218838;--primary-dark:#176b2c;--primary-light:#e8f5e9;--bg:#f5f8f5;--card:#fff;--text:#203328;--muted:#78877d;--border:#e8eee9;--warning:#f59e0b;--danger:#dc4545;--shadow:0 4px 20px rgba(30,70,40,.055);--radius:16px;--sb:env(safe-area-inset-bottom,0px)}
+:root[data-theme="dark"]{--bg:#101a12;--card:#1a271c;--text:#e8f0e8;--muted:#9fb4a2;--border:#2a3a2c;--primary-light:#203e27;--shadow:0 4px 20px rgba(0,0,0,.15)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}button{cursor:pointer}h1,h2,h3,p{margin-top:0}
+h1{font-size:27px;letter-spacing:-1px;font-weight:800;margin-bottom:4px}h2{font-size:17px;font-weight:750;margin-bottom:12px}h3{font-size:15px;font-weight:750;margin-bottom:4px}
+.m{color:var(--muted);font-size:12px;margin:3px 0}.hidden{display:none!important}
+/* SPLASH: falling food, drawing ring, rising letters, iris close */
+#sp{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 40%,#43a047,#176b2c);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;cursor:pointer;clip-path:circle(150% at 50% 45%);transition:clip-path .9s cubic-bezier(.7,0,.3,1)}
+#sp.out{clip-path:circle(0% at 50% 45%)}
+.stage{position:relative;width:150px;height:150px;margin-bottom:1rem}.stage svg{position:absolute;inset:0}
+.ring{stroke:#fff;stroke-width:3;fill:none;stroke-dasharray:440;stroke-dashoffset:440;stroke-linecap:round;animation:dr 1.6s .2s forwards}
+.stage span{position:absolute;left:50%;top:50%;font-size:34px;margin:-20px;opacity:0;animation:fall 1s cubic-bezier(.5,0,.8,.5) forwards}
+.stage span:nth-child(2){--x:-60px;animation-delay:.2s}.stage span:nth-child(3){--x:55px;animation-delay:.4s}.stage span:nth-child(4){--x:-25px;animation-delay:.6s}.stage span:nth-child(5){--x:30px;animation-delay:.8s}.stage span:nth-child(6){--x:0px;animation-delay:1s}
+.stage .bowl{font-size:64px;margin:-38px;opacity:0;animation:pop .7s 1.7s cubic-bezier(.3,1.6,.5,1) forwards}
+#sp h1{font-size:44px;letter-spacing:-1px;margin:0}#sp h1 b{display:inline-block;opacity:0;transform:translateY(30px);animation:up .5s forwards}
+#sp p{opacity:0;margin:.3rem 0;animation:up .6s 2.5s forwards}#sp small{position:absolute;bottom:calc(25px + var(--sb));opacity:.7}
+@keyframes dr{to{stroke-dashoffset:0}}
+@keyframes fall{0%{opacity:0;transform:translate(var(--x),-190px) rotate(-90deg)}15%{opacity:1}75%{opacity:1;transform:translate(calc(var(--x)*.2),0)}100%{opacity:0;transform:translate(0,10px) scale(.2)}}
+@keyframes pop{from{opacity:0;transform:scale(0) rotate(-40deg)}to{opacity:1;transform:scale(1)}}
+@keyframes up{to{opacity:1;transform:none}}
+/* LAYOUT */
+.app{min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:245px;background:var(--card);border-right:1px solid var(--border);padding:24px 16px;z-index:20;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:11px;padding:5px 10px 30px}
+.brand-icon{width:42px;height:42px;background:var(--primary-light);border-radius:13px;display:grid;place-items:center;font-size:23px}
+.brand-name{font-size:21px;font-weight:850;letter-spacing:-1px;color:var(--primary)}
+.brand small{display:block;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0}
+.nav-label{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.2px;padding:14px 12px 8px}
+.nav-list{display:flex;flex-direction:column;gap:5px}
+.nav-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 13px;border:0;border-radius:11px;background:transparent;color:var(--muted);text-align:left;font-size:13px;font-weight:650;transition:.2s}
+.nav-item:hover,.nav-item.active{background:var(--primary-light);color:var(--primary)}
+.nav-icon{font-size:18px;width:22px;text-align:center}
+.main{margin-left:245px;min-height:100vh}
+.topbar{height:70px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 35px;position:sticky;top:0;z-index:10}
+.topbar-left,.topbar-right{display:flex;align-items:center;gap:12px}.topbar-title{font-weight:750;font-size:14px}
+.icon-btn{width:38px;height:38px;border:1px solid var(--border);border-radius:11px;background:var(--card);color:var(--text);font-size:17px}
+.content{max-width:1250px;padding:30px 35px 60px;margin:auto;outline:0}
+/* BUTTONS */
+.btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:9px 15px;border-radius:10px;font-size:12px;font-weight:700;transition:.2s}
+.btn:hover{transform:translateY(-2px);background:var(--primary-light)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn-primary:hover{background:var(--primary-dark);color:#fff}
+.btn-danger{color:var(--danger);border-color:#f1dada}.btn-sm{padding:7px 10px;font-size:11px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #81c784;outline-offset:2px}
+.page-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:25px;flex-wrap:wrap}
+.page-header p{color:var(--muted);font-size:13px;margin:3px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}
+/* CARDS */
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:.25s;animation:appear .35s ease both;min-width:0}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(30,70,40,.09)}
+@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.stat{position:relative;overflow:hidden}.stat-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.stat-icon{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;font-size:19px;background:var(--primary-light)}
+.stat-number{font-size:29px;font-weight:850;letter-spacing:-1px;margin-top:13px;color:var(--text)}
+.stat-label{color:var(--muted);font-size:12px;font-weight:600}.stat-sub{color:var(--muted);font-size:10px;margin-top:3px}
+.green{color:var(--primary)!important}.orange{color:var(--warning)!important}.red{color:var(--danger)!important}
+.workflow{display:flex;gap:8px;overflow-x:auto;margin-bottom:20px;padding-bottom:5px}
+.workflow span{white-space:nowrap;background:var(--primary-light);color:var(--primary);padding:7px 12px;border-radius:30px;font-size:11px;font-weight:700}
+.list{list-style:none;padding:0;margin:10px 0 0}
+.list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);font-size:12px}.list li:last-child{border:0}
+.progress{height:8px;border-radius:20px;background:var(--border);overflow:hidden;margin:7px 0 14px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#81c784,#218838);border-radius:20px}
+.inventory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.food-card{border-left:4px solid var(--primary)}.food-card.soon{border-left-color:var(--warning)}.food-card.urgent{border-left-color:#ed7927}.food-card.expired{border-left-color:var(--danger)}
+.food-card h3{font-size:16px}.food-meta{color:var(--muted);font-size:11px;margin:7px 0}.food-price{font-weight:750;font-size:14px;margin:10px 0}
+.badge{display:inline-block;border-radius:30px;padding:5px 10px;font-size:10px;font-weight:800;white-space:nowrap}
+.fresh{background:#e6f5e9;color:#218838}.soon{background:#fff4df;color:#a56800}.urgent{background:#ffead8;color:#bd5700}.expired{background:#ffebeb;color:#c62828}
+:root[data-theme="dark"] .fresh{background:#203e27;color:#a5d6a7}:root[data-theme="dark"] .soon{background:#49391f;color:#ffd180}:root[data-theme="dark"] .urgent{background:#4b3020;color:#ffb978}:root[data-theme="dark"] .expired{background:#492525;color:#ffaaaa}
+.tip{background:var(--primary-light);border-radius:10px;padding:10px;font-size:11px;color:var(--muted);margin-top:10px}
+.card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.toolbar{display:flex;gap:10px;margin-bottom:20px;padding:13px;background:var(--card);border:1px solid var(--border);border-radius:13px}
+input,select{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:9px;padding:11px 12px;width:100%;min-width:0}
+.toolbar input{flex:2}.toolbar select{flex:1}
+.recipe-card{display:flex;flex-direction:column}
+.recipe-time{background:var(--primary-light);color:var(--primary);border-radius:20px;padding:5px 10px;font-size:10px;font-weight:800;white-space:nowrap}
+.ingredients{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0}.ingredient{padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700}
+.ingredient.have{background:#e6f5e9;color:#218838}.ingredient.missing{background:#ffebeb;color:#c62828}.ingredient.use{background:#fff1db;color:#a56800}
+.empty{text-align:center;padding:35px 15px;color:var(--muted);font-size:13px}.empty-icon{font-size:35px;margin-bottom:10px}
+dialog{width:min(510px,94vw);max-height:90vh;overflow:auto;border:1px solid var(--border);border-radius:20px;padding:25px;background:var(--card);color:var(--text);box-shadow:0 20px 80px rgba(0,0,0,.2)}
+dialog::backdrop{background:rgba(10,25,15,.55);backdrop-filter:blur(3px)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field.full{grid-column:1/-1}
+label{display:block;font-size:11px;font-weight:750;margin-bottom:6px;color:var(--muted)}.field input,.field select{font-size:13px}
+.form-error{color:var(--danger);font-size:12px;grid-column:1/-1;margin:0}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;grid-column:1/-1;margin-top:10px}
+#toast{position:fixed;bottom:calc(25px + var(--sb));left:50%;transform:translate(-50%,20px);background:#203328;color:#fff;padding:12px 20px;border-radius:12px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.3s;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,.2);max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+/* UX polish */
+.hero{display:flex;align-items:center;gap:20px;background:linear-gradient(135deg,#2e9a46,#176b2c);color:#fff;border-radius:20px;padding:22px 26px;margin-bottom:18px;box-shadow:0 10px 30px rgba(33,136,56,.28);animation:appear .4s both}
+.ringw{position:relative;flex:none;width:96px;height:96px}.ringw b{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;font-weight:850}
+.htxt h2{margin:0 0 4px;font-size:19px}.htxt p{margin:0 0 12px;opacity:.95;font-size:14px}
+.hbtn{background:#fff;color:#176b2c;border-color:#fff;font-size:13px;padding:10px 16px}.hbtn:hover{background:#e8f5e9}
+.fi{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--primary-light);margin-right:9px;font-size:18px}.food-card h3{display:flex;align-items:center}
+.life{height:6px;border-radius:9px;background:var(--border);overflow:hidden;margin:8px 0 4px}.life i{display:block;height:100%;border-radius:9px;background:#43a047}.life.soon i{background:var(--warning)}.life.urgent i{background:#ed7927}.life.expired i{background:var(--danger)}
+.fab{position:fixed;right:20px;bottom:calc(22px + var(--sb));width:58px;height:58px;border-radius:50%;border:0;background:var(--primary);color:#fff;font-size:30px;line-height:1;box-shadow:0 8px 24px rgba(33,136,56,.45);z-index:15;transition:.2s}.fab:hover{transform:scale(1.08);background:var(--primary-dark)}
+.workflow button{white-space:nowrap;border:0;background:var(--primary-light);color:var(--primary);padding:8px 14px;border-radius:30px;font-size:12px;font-weight:700}.workflow button:hover{background:var(--primary);color:#fff}
+.cf{position:fixed;z-index:300;font-size:22px;pointer-events:none;animation:cf 1s ease-out forwards}@keyframes cf{to{transform:translate(var(--dx),var(--dy)) rotate(40deg);opacity:0}}
+.nav-item.active{box-shadow:inset 3px 0 0 var(--primary)}.btn{min-height:40px}.btn-sm{min-height:34px}.icon-btn{min-width:40px;min-height:40px}
+#view>*{animation:appear .35s ease both}.card:hover .stat-icon{transform:scale(1.12) rotate(-4deg)}
+@media(max-width:700px){.fab{bottom:calc(84px + var(--sb))}.hero{flex-direction:column;text-align:center;padding:20px}}
+.bell{position:relative}.bell i{position:absolute;top:-7px;right:-7px;background:var(--danger);color:#fff;font-style:normal;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:grid;place-items:center;padding:0 4px}.bell i:empty{display:none}
+.help{padding-left:20px;margin:0}.help li{margin-bottom:10px;font-size:13px}.help b{color:var(--primary)}
+@media(max-width:1000px){.sidebar{width:210px}.main{margin-left:210px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:25px 20px}}
+@media(max-width:700px){
+.sidebar{top:auto;bottom:0;left:0;right:0;width:100%;height:calc(68px + var(--sb));padding:5px 8px var(--sb);border-right:0;border-top:1px solid var(--border)}
+.brand,.nav-label{display:none}
+.nav-list{height:100%;flex-direction:row;justify-content:space-around;align-items:center;gap:2px}
+.nav-item{width:auto;flex:1;flex-direction:column;justify-content:center;gap:2px;padding:5px 2px;font-size:9px;border-radius:9px;text-align:center}
+.nav-icon{font-size:19px;width:auto}.main{margin-left:0;padding-bottom:calc(70px + var(--sb))}
+.topbar{height:58px;padding:0 15px}.content{padding:22px 14px 35px}.inventory-grid,.grid-two{grid-template-columns:1fr}.page-header{align-items:flex-start}#toast{bottom:calc(80px + var(--sb))}}
+@media(max-width:450px){h1{font-size:23px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{padding:14px;border-radius:13px}.stat-number{font-size:24px}.stat-icon{width:33px;height:33px;font-size:16px}.stat-label{font-size:10px}.stat-sub{font-size:9px}.toolbar{flex-wrap:wrap}.toolbar input,.toolbar select{flex:1 1 100%}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-actions,.form-error{grid-column:auto}.actions{width:100%}.actions button{flex:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="sp" role="presentation">
+<div class="stage"><svg viewBox="0 0 150 150"><circle class="ring" cx="75" cy="75" r="70"/></svg><span>🍅</span><span>🥕</span><span>🍞</span><span>🥚</span><span>🍌</span><i class="bowl" style="font-style:normal">🥗</i></div>
+<h1 aria-label="FoodWise"></h1><p>Eat smart. Waste less. Save more.</p><small>Tap to skip</small>
+</div>
+<div class="app">
+    <div class="event-logo">
+      <img src="https://github.com/sm16967/Food_Wise/blob/main/Built%20for%20AIgnite%202026%20(1).png" alt="Buildathon 2026 Logo">
+</div>
+
+<aside class="sidebar">
+<div class="brand"><div class="brand-icon">🥗</div><div class="brand-name">FoodWise<small>SMART FOOD MANAGEMENT</small></div></div>
+<div class="nav-label">MAIN MENU</div>
+<nav class="nav-list" id="navigation" aria-label="Main menu">
+<button class="nav-item active" data-go="dash"><span class="nav-icon">⌂</span>Dashboard</button>
+<button class="nav-item" data-go="inv"><span class="nav-icon">🧺</span>My Inventory</button>
+<button class="nav-item" data-go="exp"><span class="nav-icon">⏰</span>Expiration Tracker</button>
+<button class="nav-item" data-go="guide"><span class="nav-icon">📖</span>Storage Guide</button>
+<button class="nav-item" data-go="groc"><span class="nav-icon">🛒</span>Shopping List</button>
+<button class="nav-item" data-go="ws"><span class="nav-icon">♻️</span>Food Waste</button>
+</nav>
+</aside>
+<div class="main">
+<header class="topbar"><div class="topbar-left"><span class="topbar-title">🥗 FoodWise</span></div>
+<div class="topbar-right"><button class="icon-btn bell" data-a="bell" title="Expiry alarms" aria-label="Expiry alarms">🔔<i id="bellN"></i></button><button class="icon-btn" data-a="help" title="How to use FoodWise" aria-label="How to use FoodWise">?</button><button class="icon-btn" id="themeBtn" data-a="theme" title="Toggle theme" aria-label="Toggle theme">🌙</button></div></header>
+<main class="content" id="view" tabindex="-1"></main>
+</div></div>
+<button class="fab" data-a="add" aria-label="Add food" title="Add food">＋</button>
+<dialog id="modal"></dialog><div id="toast" role="status"></div>
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='foodwise-single-v2',TKEY='foodwise-theme';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const iso=o=>{const d=new Date();d.setDate(d.getDate()+o);return d.toISOString().slice(0,10)};
+const CATS=['Vegetables','Fruits','Meat','Fish','Dairy','Eggs','Grains','Bakery','Frozen Food','Other'];
+const LOCS=['Refrigerator','Freezer','Pantry','Kitchen Shelf'];
+const UNITS=['pcs','kg','g','L','ml','bunch','loaf','pack'];
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
+function seed(){return{
+inv:[['Tomato','Vegetables',6,'pcs',2,60,'Refrigerator'],['Potato','Vegetables',2,'kg',20,100,'Pantry'],['Spinach','Vegetables',1,'bunch',1,30,'Refrigerator'],['Eggs','Eggs',12,'pcs',10,150,'Refrigerator'],['Chicken','Meat',1,'kg',2,260,'Refrigerator'],['Rohu Fish','Fish',1,'kg',1,320,'Refrigerator'],['Milk','Dairy',1,'L',-1,90,'Refrigerator'],['Yogurt','Dairy',500,'g',4,80,'Refrigerator'],['Rice','Grains',5,'kg',300,600,'Pantry'],['Masoor Dal','Grains',1,'kg',200,150,'Pantry'],['Bread','Bakery',1,'loaf',0,60,'Kitchen Shelf'],['Banana','Fruits',6,'pcs',3,50,'Kitchen Shelf'],['Frozen Peas','Frozen Food',500,'g',90,120,'Freezer'],['Brinjal','Vegetables',4,'pcs',6,70,'Refrigerator'],['Green Chili','Vegetables',100,'g',5,20,'Refrigerator']]
+ .map(([name,cat,qty,unit,days,price,loc],n)=>({id:uid(),name,cat,qty,unit,exp:iso(days),price,loc,dt:['Meat','Fish','Dairy'].includes(cat)?'use-by':'best-before',status:'active',added:Date.now()-n*1000})),
+gr:[['Onion','Vegetables',2,80,0],['Cooking Oil','Other',1,180,0],['Chicken','Meat',1,260,0],['Lentils','Grains',1,140,0],['Cauliflower','Vegetables',1,50,0],['Apple','Fruits',4,160,0],['Butter','Dairy',1,120,0],['Rui Fish','Fish',1,300,0],['Flour (Atta)','Grains',2,110,1],['Frozen Paratha','Frozen Food',1,200,1]].map(([name,cat,qty,price,done])=>({id:uid(),name,cat,qty,price,done:!!done})),
+ws:[['Banana','Fruits','4 pcs',40,'Spoiled',-20],['Bread','Bakery','1 loaf',60,'Expired',-14],['Leftover Rice','Grains','2 cups',30,'Leftovers',-9],['Milk','Dairy','1 L',90,'Expired',-5],['Cucumber','Vegetables','3 pcs',45,'Purchased Too Much',-2]].map(([name,cat,qty,val,why,d])=>({id:uid(),name,cat,qty,val,why,date:iso(d)}))}}
+let S;
+try{S=JSON.parse(lsGet(KEY));if(!S||!Array.isArray(S.inv)||!Array.isArray(S.gr)||!Array.isArray(S.ws))throw 0}catch(e){S=seed()}
+S.alarm=Object.assign({sound:true,notify:false,sig:''},S.alarm);
+function save(){if(!lsSet(KEY,JSON.stringify(S)))toast('Could not save in this browser. Changes last until you close the page.')}
+const money=v=>'৳'+Number(v||0).toLocaleString('en-US');
+const plural=(n,w)=>n+' '+w+(n===1?'':'s');
+function days(date){const a=new Date();a.setHours(0,0,0,0);return Math.round((new Date(date+'T00:00:00')-a)/86400000)}
+function status(i){const d=days(i.exp);if(d<0)return{k:'expired',label:'Expired',d};if(d<=2)return{k:'urgent',label:'Urgent',d};if(d<=7)return{k:'soon',label:'Use Soon',d};return{k:'fresh',label:'Fresh',d}}
+function dateLabel(d){if(d<0)return plural(-d,'day')+' past date';if(d===0)return'Expires today';return plural(d,'day')+' left'}
+const active=()=>S.inv.filter(i=>i.status==='active');
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2500)}
+const options=(arr,v)=>arr.map(x=>`<option value="${esc(x)}" ${x===v?'selected':''}>${esc(x)}</option>`).join('');
+const EMO={Vegetables:'🥬',Fruits:'🍎',Meat:'🍗',Fish:'🐟',Dairy:'🥛',Eggs:'🥚',Grains:'🌾',Bakery:'🍞','Frozen Food':'🧊',Other:'📦'};
+function foodCard(i){const s=status(i);
+const advice=s.k==='fresh'?'':s.k==='soon'?'Plan to use this food soon.':s.k==='urgent'?'Use promptly if safe, or freeze if suitable.':(i.dt==='use-by'||['Meat','Fish','Dairy','Eggs'].includes(i.cat))?'Perishable or use-by food past its date. Do not eat it.':'Best-before relates to quality, not necessarily safety. Check look, smell and texture; discard if spoiled.';
+return `<article class="card food-card ${s.k}"><div class="stat-top"><h3><span class="fi">${EMO[i.cat]||'📦'}</span>${esc(i.name)}</h3><span class="badge ${s.k}">${s.label}</span></div>
+<p class="food-meta">${esc(i.cat)} · ${esc(i.loc)}</p><div class="food-price">${i.qty} ${esc(i.unit)} <span class="m">· ${money(i.price)}</span></div>
+<p class="m">📅 ${dateLabel(s.d)}</p><div class="life ${s.k}" aria-hidden="true"><i style="width:${s.d<0?100:Math.min(100,Math.max(8,s.d/14*100))}%"></i></div><p class="m">${esc(i.exp)} · ${esc(i.dt)}</p>${advice?`<div class="tip">💡 ${advice}</div>`:''}
+<div class="card-actions"><button class="btn btn-sm" data-a="eat" data-id="${i.id}">✓ Used</button><button class="btn btn-sm" data-a="toss" data-id="${i.id}">🗑 Waste</button><button class="btn btn-sm" data-a="edit" data-id="${i.id}">✏️ Edit</button><button class="btn btn-sm btn-danger" data-a="del" data-id="${i.id}">Delete</button></div></article>`}
+function dashboard(){const a=active(),urgent=a.filter(i=>['urgent','expired'].includes(status(i).k)),soon=a.filter(i=>['urgent','soon'].includes(status(i).k));
+const wasted=S.ws.reduce((t,w)=>t+Number(w.val),0),consumed=S.inv.filter(i=>i.status==='consumed').reduce((t,i)=>t+i.price,0),rate=consumed+wasted?Math.round(consumed/(consumed+wasted)*100):0;
+const cats={};a.forEach(i=>cats[i.cat]=(cats[i.cat]||0)+1);const max=Math.max(1,...Object.values(cats));
+const top=k=>{const o={};S.ws.forEach(w=>o[w[k]]=(o[w[k]]||0)+1);return Object.entries(o).sort((x,y)=>y[1]-x[1])[0]?.[0]||'–'};
+const stat=(l,ic,n,sub,c='')=>`<div class="card stat"><div class="stat-top"><span class="stat-label">${l}</span><span class="stat-icon">${ic}</span></div><div class="stat-number ${c}">${n}</div><div class="stat-sub">${sub}</div></div>`;
+return `<div class="page-header"><div><h1>${greet()} 👋</h1><p>${subline()}</p></div><div class="actions"><button class="btn btn-primary" data-a="add">＋ Add Food</button><button class="btn" data-go="guide">📖 Storage Guide</button></div></div>
+${alarmBanner()}${hero()}<div class="workflow"><button data-go="groc">🛒 Purchase</button><button data-go="inv">🧺 Inventory</button><button data-go="exp">⏰ Track expiry</button><button data-go="guide">📖 Store safely</button><button data-go="inv">✅ Consume</button><button data-go="ws">♻️ Reduce waste</button></div>
+<div class="grid">${stat('Total Food Items','🧺',a.length,'Currently in inventory')}${stat('Expiring Soon','⏰',soon.length,'Needs your attention','orange')}${stat('Expired Items','⚠️',a.filter(i=>status(i).k==='expired').length,'Check food safety','red')}${stat('Food Waste','♻️',S.ws.length,'Total loss: '+money(wasted))}${stat('Consumed Food Value','💰',money(consumed),'Value of consumed inventory','green')}${stat('Consumption Rate','📈',rate+'%','Consumed vs recorded waste value','green')}</div>
+<div class="grid-two">
+<section class="card"><div class="stat-top"><h2>🚨 Expiration Alerts</h2><button class="btn btn-sm" data-go="exp">View all</button></div>${urgent.length?`<ul class="list">${[...urgent].sort((x,y)=>status(x).d-status(y).d).slice(0,5).map(i=>`<li><span><strong>${esc(i.name)}</strong><br><small class="m">${esc(i.cat)}</small></span><span class="badge ${status(i).k}">${dateLabel(status(i).d)}</span></li>`).join('')}</ul>`:'<div class="empty">🎉<br>Nothing urgent right now!</div>'}</section>
+<section class="card"><h2>🆕 Recently Added</h2><ul class="list">${[...a].sort((x,y)=>y.added-x.added).slice(0,5).map(i=>`<li><span><strong>${esc(i.name)}</strong><br><small class="m">${esc(i.cat)}</small></span><span>${i.qty} ${esc(i.unit)}</span></li>`).join('')||'<li>No items yet.</li>'}</ul></section>
+<section class="card"><h2>📊 Inventory Categories</h2>${Object.entries(cats).map(([c,v])=>`<div class="stat-top"><span class="m">${esc(c)}</span><strong>${v}</strong></div><div class="progress"><i style="width:${v/max*100}%"></i></div>`).join('')||'<div class="empty">No inventory available.</div>'}</section>
+<section class="card"><h2>♻️ Food Waste Overview</h2><ul class="list"><li><span>Total Financial Loss</span><strong>${money(wasted)}</strong></li><li><span>Waste Records</span><strong>${S.ws.length}</strong></li><li><span>Top Waste Category</span><strong>${esc(top('cat'))}</strong></li><li><span>Common Waste Reason</span><strong>${esc(top('why'))}</strong></li></ul></section></div>`}
+let filter={q:'',cat:'',sort:'date'};
+function inventory(expiring){let a=active();if(expiring)a=a.filter(i=>status(i).k!=='fresh');
+a=a.filter(i=>(!filter.q||i.name.toLowerCase().includes(filter.q.toLowerCase()))&&(!filter.cat||i.cat===filter.cat));
+a.sort(filter.sort==='name'?(x,y)=>x.name.localeCompare(y.name):(x,y)=>days(x.exp)-days(y.exp));
+return `<div class="page-header"><div><h1>${expiring?'Expiration Tracker':'My Inventory'}</h1><p>${expiring?'Food that is expired or due within 7 days. Printed dates are guidance: check best-before vs use-by.':'Manage everything in your kitchen.'}</p></div><button class="btn btn-primary" data-a="add">＋ Add Food</button></div>
+<div class="toolbar"><input id="search" type="search" aria-label="Search food" placeholder="🔍 Search food..." value="${esc(filter.q)}"><select id="category" aria-label="Category"><option value="">All Categories</option>${options(CATS,filter.cat)}</select><select id="sort" aria-label="Sort"><option value="date">Sort by Expiry</option><option value="name" ${filter.sort==='name'?'selected':''}>Sort by Name</option></select></div>
+<div class="inventory-grid">${a.map(foodCard).join('')||`<div class="card empty" style="grid-column:1/-1"><div class="empty-icon">${expiring?'🎉':'🧺'}</div><h3>${expiring?'Nothing is expiring soon':'Nothing here yet'}</h3><p>${expiring?'Your food looks fresh.':'Add your first food item to get started.'}</p><button class="btn btn-primary" data-a="add">＋ Add Food</button></div>`}</div>`}
+const GUIDE=[
+['Vegetables','🥬','Fridge crisper, dry and loosely covered. Wash only before use.','3–7 days (leafy greens 2–4)','Blanch, cool and freeze. If wilting, cook it today.'],
+['Fruits','🍌','Ripen on the counter, then move to the fridge. Keep apart from other produce.','2–7 days once ripe','Slice and freeze (great for smoothies), or cook it into something soft.'],
+['Meat','🍗','Sealed, on the bottom fridge shelf so juices cannot drip.','1–2 days raw','Freeze at once if you will not cook it today. Thaw in the fridge, never on the counter.'],
+['Fish','🐟','Coldest part of the fridge, tightly wrapped.','1 day raw','Cook or freeze it today. Fish spoils fast in warm weather.'],
+['Dairy','🥛','Fridge (not the door for milk). Keep closed and use clean spoons.','Follow the pack; opened milk about 3–5 days','Milk can be frozen for cooking. Yogurt is best eaten or cooked soon.'],
+['Eggs','🥚','Fridge, in the carton.','3–5 weeks','Hard-boil them (keep boiled eggs in the fridge about 1 week). Do not freeze in the shell.'],
+['Grains','🍚','Airtight container in a cool, dry place.','Months (rice, dal)','Check for moisture, insects or a musty smell before cooking.'],
+['Bakery','🍞','Room temperature in a bag, or the freezer for longer.','2–3 days at room temperature','Slice and freeze, then toast from frozen. If mould shows, throw away the whole loaf.'],
+['Frozen Food','🧊','Freezer at -18°C or colder, sealed.','Several months','Do not refreeze food that has fully thawed.'],
+['Other','📦','Follow the instructions on the pack.','See the pack','Check the date type on the pack: use-by is about safety.']];
+const gRow=c=>GUIDE.find(x=>x[0]===c)||GUIDE[GUIDE.length-1];
+function guidePage(){
+const need=active().filter(i=>['urgent','soon','expired'].includes(status(i).k)).sort((x,y)=>status(x).d-status(y).d);
+const perish=i=>['Meat','Fish','Dairy','Eggs'].includes(i.cat)||i.dt==='use-by';
+const todo=i=>{const s=status(i);return s.k==='expired'?(perish(i)?'Past its date. Do not eat it: discard it safely.':'Check look, smell and texture. Discard it if anything seems off.'):gRow(i.cat)[4]};
+return `<div class="page-header"><div><h1>Storage Guide 📖</h1><p>Keep food fresh longer and use it safely.</p></div></div>
+<div class="card"><h2>⚡ Use it up first</h2>${need.length?`<ul class="list">${need.map(i=>`<li><span><strong>${esc(i.name)}</strong> <small class="m">${esc(i.cat)} · ${esc(i.loc)}</small><br><small class="m">${todo(i)}</small></span><span class="badge ${status(i).k}">${dateLabel(status(i).d)}</span></li>`).join('')}</ul>`:'<div class="empty">🎉<br>Nothing needs action right now.</div>'}</div>
+<div class="grid-two" style="margin-top:18px">${GUIDE.map(g=>`<article class="card"><h3>${g[1]} ${g[0]}</h3><p class="m"><strong>Store:</strong> ${g[2]}</p><p class="m"><strong>Typical life:</strong> ${g[3]}</p><div class="tip">💡 ${g[4]}</div></article>`).join('')}</div>
+<div class="grid-two"><section class="card"><h2>🍛 Leftovers</h2><ul class="list"><li>Cool cooked food and refrigerate within 2 hours (1 hour in hot weather).</li><li>Store in shallow, covered containers and eat within 1–2 days.</li><li>Cooked rice is a common cause of food poisoning: chill it fast and reheat once, until steaming hot.</li></ul></section>
+<section class="card"><h2>⚠️ Food safety basics</h2><ul class="list"><li>Use-by is about safety. Best-before is about quality.</li><li>Keep the fridge at 5°C or below and the freezer at -18°C.</li><li>Keep raw meat and fish away from ready-to-eat food.</li><li>When in doubt, throw it out. This is general guidance, not medical advice.</li></ul></section></div>`}
+function grocery(){const left=S.gr.filter(g=>!g.done),total=left.reduce((t,g)=>t+Number(g.price),0);
+const st=(l,n,c='')=>`<div class="card stat"><div class="stat-label">${l}</div><div class="stat-number ${c}">${n}</div></div>`;
+return `<div class="page-header"><div><h1>Shopping List 🛒</h1><p>Manage your grocery shopping easily.</p></div><button class="btn btn-primary" data-a="gadd">＋ Add Item</button></div>
+<div class="grid" style="margin-bottom:18px">${st('Estimated Shopping Cost',money(total),'green')}${st('Remaining Items',left.length)}${st('Purchased Items',S.gr.length-left.length)}${st('Total Items',S.gr.length)}</div>
+<div class="grid-two" style="margin-top:0">${S.gr.map(g=>{const dup=active().find(i=>i.name.toLowerCase().includes(g.name.toLowerCase().split(' ')[0]));
+return `<div class="card"><div class="stat-top"><label style="display:flex;gap:9px;align-items:center;margin:0;color:var(--text);font-size:14px"><input type="checkbox" data-a="gtog" data-id="${g.id}" ${g.done?'checked':''} style="width:auto"><strong style="${g.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(g.name)}</strong></label><strong>${money(g.price)}</strong></div>
+<p class="m">${esc(g.cat)} · Quantity: ${g.qty}</p>${dup&&!g.done?`<div class="tip">⚠️ You already have ${esc(dup.name)} (${dup.qty} ${esc(dup.unit)}) in your inventory.</div>`:''}
+<div class="card-actions"><button class="btn btn-sm btn-primary" data-a="gbuy" data-id="${g.id}">📥 Bought</button><button class="btn btn-sm btn-danger" data-a="gdel" data-id="${g.id}">Delete</button></div></div>`}).join('')||'<div class="card empty">🛒<br>Your shopping list is empty.</div>'}</div>`}
+function waste(){const total=S.ws.reduce((t,w)=>t+Number(w.val),0);
+return `<div class="page-header"><div><h1>Food Waste Tracker ♻️</h1><p>Understand your waste and reduce unnecessary spending. Use “Waste” on an inventory item to log it here.</p></div></div>
+<div class="grid" style="margin-bottom:18px"><div class="card stat"><div class="stat-label">Total Waste Records</div><div class="stat-number">${S.ws.length}</div></div><div class="card stat"><div class="stat-label">Estimated Financial Loss</div><div class="stat-number red">${money(total)}</div></div></div>
+<div class="card"><h2>Waste History</h2><ul class="list">${[...S.ws].sort((a,b)=>b.date.localeCompare(a.date)).map(w=>`<li><div><strong>${esc(w.name)}</strong><p class="m">${esc(w.cat)} · ${esc(w.qty)}</p><small class="m">${esc(w.date)} · ${esc(w.why)}</small></div><div style="text-align:right"><strong>${money(w.val)}</strong><br><button class="btn btn-sm btn-danger" data-a="wdel" data-id="${w.id}">Delete</button></div></li>`).join('')||'<li class="empty">🎉 No waste records yet!</li>'}</ul></div>`}
+const pages={dash:dashboard,inv:()=>inventory(false),exp:()=>inventory(true),guide:guidePage,groc:grocery,ws:waste};
+let current='dash';
+function render(){$('#view').innerHTML=pages[current]();updateBell();document.querySelectorAll('[data-go]').forEach(b=>{b.classList.toggle('active',b.dataset.go===current);if(b.classList.contains('nav-item'))b.setAttribute('aria-current',b.dataset.go===current?'page':'false')})}
+function navigate(p,fromHash){if(!pages[p])return;current=p;if(!fromHash&&location.hash.slice(1)!==p)location.hash=p;render();window.scrollTo({top:0,behavior:'smooth'})}
+function openForm(html){const m=$('#modal');m.innerHTML=html;m.showModal();return m}
+function formData(sel){const o={};document.querySelectorAll(sel+' [name]').forEach(el=>o[el.name]=el.value);return o}
+function enterKey(sel,fn){$(sel).addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();fn()}})}
+function foodForm(item){const i=item||{name:'',cat:'Vegetables',qty:1,unit:'pcs',exp:iso(7),price:0,loc:'Refrigerator',dt:'best-before'};
+const m=openForm(`<div class="modal-header"><h2 style="margin:0">${i.id?'Edit Food Item':'Add New Food'}</h2><button class="icon-btn" type="button" data-a="close" aria-label="Close">✕</button></div>
+<div id="foodForm" class="form-grid">
+<div class="field full"><label for="f1">Food Name</label><input id="f1" name="name" maxlength="60" value="${esc(i.name)}" placeholder="e.g. Fresh Tomato"></div>
+<div class="field"><label for="f2">Category</label><select id="f2" name="cat">${options(CATS,i.cat)}</select></div>
+<div class="field"><label for="f3">Storage Location</label><select id="f3" name="loc">${options(LOCS,i.loc)}</select></div>
+<div class="field"><label for="f4">Quantity</label><input id="f4" name="qty" type="number" step="any" min=".01" value="${i.qty}"></div>
+<div class="field"><label for="f5">Unit</label><select id="f5" name="unit">${options(UNITS,i.unit)}</select></div>
+<div class="field"><label for="f6">Expiration Date</label><input id="f6" name="exp" type="date" value="${i.exp}"></div>
+<div class="field"><label for="f7">Date Type</label><select id="f7" name="dt"><option value="best-before" ${i.dt==='best-before'?'selected':''}>Best Before (quality)</option><option value="use-by" ${i.dt==='use-by'?'selected':''}>Use By (safety)</option></select></div>
+<div class="field full"><label for="f8">Purchase Price (BDT ৳)</label><input id="f8" name="price" type="number" min="0" step="any" value="${i.price}"></div>
+<p class="form-error" id="foodError" role="alert"></p>
+<div class="modal-actions"><button type="button" class="btn" data-a="close">Cancel</button><button type="button" class="btn btn-primary" id="saveFood">Save Food</button></div></div>`);
+const saveFood=()=>{const f=formData('#foodForm');f.name=f.name.trim();f.qty=Number(f.qty);f.price=Number(f.price)||0;
+const err=!f.name?'Enter a food name.':!(f.qty>0)?'Quantity must be greater than zero.':!f.exp?'Select an expiration date.':f.price<0?'Price cannot be negative.':'';
+if(err){$('#foodError').textContent=err;return}
+if(i.id)Object.assign(S.inv.find(x=>x.id===i.id),f);else S.inv.push({...f,id:uid(),status:'active',added:Date.now()});
+save();m.close();toast(i.id?'Food updated successfully':'Food added successfully');render()};$('#saveFood').onclick=saveFood;enterKey('#foodForm',saveFood)}
+function groceryForm(){const m=openForm(`<div class="modal-header"><h2 style="margin:0">Add Shopping Item</h2><button class="icon-btn" type="button" data-a="close" aria-label="Close">✕</button></div>
+<div id="groceryForm" class="form-grid">
+<div class="field full"><label for="g1">Item Name</label><input id="g1" name="name" maxlength="60" placeholder="e.g. Onion"></div>
+<div class="field"><label for="g2">Category</label><select id="g2" name="cat">${options(CATS,'Vegetables')}</select></div>
+<div class="field"><label for="g3">Quantity</label><input id="g3" name="qty" type="number" min="1" value="1"></div>
+<div class="field full"><label for="g4">Estimated Price (BDT ৳)</label><input id="g4" name="price" type="number" min="0" value="0"></div>
+<p class="form-error" id="gError" role="alert"></p>
+<div class="modal-actions"><button type="button" class="btn" data-a="close">Cancel</button><button type="button" class="btn btn-primary" id="saveGrocery">Add Item</button></div></div>`);
+const saveGrocery=()=>{const f=formData('#groceryForm');f.name=f.name.trim();f.qty=Number(f.qty);f.price=Number(f.price)||0;
+if(!f.name||!(f.qty>0)||f.price<0){$('#gError').textContent='Enter a valid name, quantity and price.';return}
+const dup=active().find(i=>i.name.toLowerCase().includes(f.name.toLowerCase().split(' ')[0]));
+S.gr.push({...f,id:uid(),done:false});save();m.close();toast(dup?'Added, but you already have '+dup.name:'Shopping item added');render()};$('#saveGrocery').onclick=saveGrocery;enterKey('#groceryForm',saveGrocery)}
+function greet(){const h=new Date().getHours();return h<12?'Good morning':h<18?'Good afternoon':'Good evening'}
+function subline(){const x=alerts(),n=x.exp.length+x.today.length;return n?plural(n,'item')+' need'+(n===1?'s':'')+' your attention today.':active().length?'Everything looks fresh. Nice work!':'Add your first food to get started.'}
+function hero(){const a=active(),good=a.filter(i=>['fresh','soon'].includes(status(i).k)).length,pct=a.length?Math.round(good/a.length*100):0,risk=a.filter(i=>status(i).d<=3).reduce((t,i)=>t+Number(i.price),0),x=alerts();
+const cta=x.exp.length?['Review expired food','go','exp']:(x.today.length||x.soon.length)?['Use these first','go','guide']:['Add food','a','add'],r=34,c=2*Math.PI*r;
+return `<section class="hero"><div class="ringw"><svg viewBox="0 0 80 80" width="96" height="96" aria-hidden="true"><circle cx="40" cy="40" r="${r}" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="8"/><circle cx="40" cy="40" r="${r}" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct/100)}" transform="rotate(-90 40 40)"/></svg><b>${pct}%</b></div><div class="htxt"><h2>Your food health</h2><p>${good} of ${a.length} items are in good shape.${risk?` <strong>${money(risk)}</strong> of food needs using in the next 3 days.`:' Nothing is at risk right now.'}</p><button class="btn hbtn" data-${cta[1]}="${cta[2]}">${cta[0]} →</button></div></section>`}
+function celebrate(x,y){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const E=['🎉','✨','🥗','💚','⭐'];for(let k=0;k<12;k++){const s=document.createElement('span');s.className='cf';s.textContent=E[k%5];s.style.cssText=`left:${x}px;top:${y}px;--dx:${(Math.random()-.5)*220}px;--dy:${-60-Math.random()*140}px`;document.body.appendChild(s);setTimeout(()=>s.remove(),1100)}}
+function alerts(){const a=active();return{exp:a.filter(i=>status(i).d<0),today:a.filter(i=>status(i).d===0),soon:a.filter(i=>{const d=status(i).d;return d>0&&d<=2})}}
+function summary(){const x=alerts(),p=[];if(x.exp.length)p.push(plural(x.exp.length,'item')+' expired');if(x.today.length)p.push(plural(x.today.length,'item')+(x.today.length===1?' expires':' expire')+' today');if(x.soon.length)p.push(plural(x.soon.length,'item')+(x.soon.length===1?' expires':' expire')+' within 2 days');return p.join(', ')}
+function updateBell(){const x=alerts(),el=$('#bellN');if(el)el.textContent=(x.exp.length+x.today.length+x.soon.length)||''}
+let ac;function beep(){if(!S.alarm.sound)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();[0,.35,.7].forEach(t=>{const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=880;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+t);o.stop(ac.currentTime+t+.2)})}catch(e){}}
+function pushNote(body){try{if(S.alarm.notify&&window.Notification&&Notification.permission==='granted')new Notification('FoodWise expiry alarm',{body})}catch(e){}}
+function ring(manual){const s=summary();if(!s){if(manual)toast('No expiry alarms. All good!');return}beep();toast('🚨 '+s);pushNote(s)}
+function checkAlarm(){const x=alerts(),due=[...x.exp,...x.today];if(!due.length){if(S.alarm.sig){S.alarm.sig='';save()}return}const sig=iso(0)+':'+due.map(i=>i.id).sort().join(',');if(S.alarm.sig===sig)return;S.alarm.sig=sig;save();ring()}
+function alarmBanner(){const x=alerts();if(!(x.exp.length+x.today.length))return '';return `<div class="card" style="border-left:4px solid var(--danger);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span>🚨 <strong>${summary()}</strong></span><button class="btn btn-sm btn-danger" data-a="bell">View alarms</button></div>`}
+function bellPanel(){const x=alerts(),row=i=>`<li><span><strong>${esc(i.name)}</strong> <small class="m">${esc(i.loc)}</small></span><span class="badge ${status(i).k}">${dateLabel(status(i).d)}</span></li>`;
+const sec=(t,l)=>l.length?`<h3 style="margin:14px 0 0">${t}</h3><ul class="list">${l.map(row).join('')}</ul>`:'';
+openForm(`<div class="modal-header"><h2 style="margin:0">🔔 Expiry alarms</h2><button class="icon-btn" type="button" data-a="close" aria-label="Close">✕</button></div>${(x.exp.length+x.today.length+x.soon.length)?sec('🚨 Expired',x.exp)+sec('⏰ Expires today',x.today)+sec('⚠️ Within 2 days',x.soon):'<div class="empty">🎉<br>No expiry alarms right now.</div>'}
+<div class="card-actions"><button type="button" class="btn btn-sm" data-a="asound">${S.alarm.sound?'🔊 Sound: On':'🔇 Sound: Off'}</button><button type="button" class="btn btn-sm" data-a="anotify">${S.alarm.notify?'🔔 Browser alerts: On':'🔕 Browser alerts: Off'}</button><button type="button" class="btn btn-sm" data-a="atest">▶ Test alarm</button></div>
+<p class="m" style="margin-top:12px">Alarms ring while FoodWise is open in a browser tab. They cannot ring when the app is closed.</p>`)}
+function helpModal(){openForm(`<div class="modal-header"><h2 style="margin:0">How to use FoodWise</h2><button class="icon-btn" type="button" data-a="close" aria-label="Close">✕</button></div>
+<ol class="help">
+<li><b>Add your food.</b> Press “＋ Add Food” on the Dashboard or in My Inventory. Enter the name, category, quantity, the date printed on the pack, the date type and the price. <em>Best-before</em> is about quality, <em>use-by</em> is about safety.</li>
+<li><b>Track expiry.</b> The Expiration Tracker lists food that is expired or due within 7 days. Badges: Fresh (more than 7 days), Use Soon (3–7), Urgent (0–2) and Expired.</li>
+<li><b>Use it safely.</b> The Storage Guide has a “Use it first” list that tells you what to do with each item, plus storage and safety tips.</li>
+<li><b>Mark food as used.</b> Press “✓ Used” when you eat it. Its price counts as consumed value on the Dashboard.</li>
+<li><b>Record waste.</b> Press “🗑 Waste” when you throw food away. It is added to Food Waste with its cost. “Delete” only removes a mistake and does not count as waste.</li>
+<li><b>Shop smart.</b> In the Shopping List, add items and tick them off. A warning appears if you already have that food. “📥 Bought” moves the item to your inventory, so update its expiry date.</li>
+<li><b>Read the Dashboard.</b> The numbers update by themselves. Consumption rate = consumed value ÷ (consumed value + wasted value).</li>
+<li><b>Expiry alarms.</b> The 🔔 bell shows how many items are expired or expire within 2 days. FoodWise rings an alarm and shows a message when food expires, while the app is open. Use the bell to turn sound or browser alerts on or off.</li>
+<li><b>Good to know.</b> Your data is saved only in this browser on this device. Clearing your browser data erases it. Use 🌙 / ☀️ to switch theme.</li>
+</ol>
+<div class="modal-actions"><button type="button" class="btn btn-primary" data-a="close">Got it</button></div>`)}
+let pending=null;
+function ask(msg,fn,label){pending=fn;openForm(`<div class="modal-header"><h2 style="margin:0">Are you sure?</h2><button class="icon-btn" type="button" data-a="close" aria-label="Close">✕</button></div><p>${esc(msg)}</p><div class="modal-actions"><button type="button" class="btn" data-a="close">Cancel</button><button type="button" class="btn btn-danger" data-a="yes" id="yesBtn">${label||'Yes, continue'}</button></div>`)}
+function setTheme(t){document.documentElement.dataset.theme=t;const b=$('#themeBtn');if(b)b.textContent=t==='dark'?'☀️':'🌙'}
+const actions={
+add:()=>foodForm(),gadd:groceryForm,help:()=>helpModal(),bell:()=>bellPanel(),asound:()=>{S.alarm.sound=!S.alarm.sound;save();bellPanel();if(S.alarm.sound)beep()},atest:()=>{$('#modal').close();ring(true)},anotify:()=>{if(S.alarm.notify){S.alarm.notify=false;save();bellPanel();return}if(!window.Notification){toast('Browser alerts are not supported here. In-app alarms still work.');return}try{Promise.resolve(Notification.requestPermission()).then(p=>{S.alarm.notify=p==='granted';save();bellPanel();if(p!=='granted')toast('Permission was not given. In-app alarms still work.')}).catch(()=>toast('Browser alerts are blocked here. In-app alarms still work.'))}catch(e){toast('Browser alerts are blocked here. In-app alarms still work.')}},close:()=>$('#modal').close(),yes:()=>{const f=pending;pending=null;$('#modal').close();if(f)f()},
+theme:()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(t);lsSet(TKEY,t)},
+edit:id=>{const i=S.inv.find(x=>x.id===id);if(i)foodForm(i)},
+eat:id=>{const i=S.inv.find(x=>x.id===id);if(!i)return;i.status='consumed';toast('Great job! Less waste 🎉')},
+toss:id=>{const i=S.inv.find(x=>x.id===id);if(!i)return;ask(`Discard ${i.name}? It will be logged as food waste.`,()=>{i.status='discarded';S.ws.push({id:uid(),name:i.name,cat:i.cat,qty:i.qty+' '+i.unit,val:i.price,why:status(i).k==='expired'?'Expired':'Spoiled',date:iso(0)});save();render();toast('Food waste recorded')},'Yes, discard')},
+del:id=>{const i=S.inv.find(x=>x.id===id);if(!i)return;ask(`Delete ${i.name}? (It will not count as waste.)`,()=>{S.inv=S.inv.filter(x=>x.id!==id);save();render();toast('Food item deleted')},'Yes, delete')},
+gtog:id=>{const g=S.gr.find(x=>x.id===id);if(g)g.done=!g.done},
+gdel:id=>{S.gr=S.gr.filter(x=>x.id!==id);toast('Shopping item removed')},
+wdel:id=>{const w=S.ws.find(x=>x.id===id);if(!w)return;ask(`Delete the waste record for ${w.name}?`,()=>{S.ws=S.ws.filter(x=>x.id!==id);save();render();toast('Waste record deleted')},'Yes, delete')},
+gbuy:id=>{const g=S.gr.find(x=>x.id===id);if(!g)return;S.inv.push({id:uid(),name:g.name,cat:g.cat,qty:g.qty,unit:'pcs',exp:iso(7),price:g.price,loc:'Refrigerator',dt:'best-before',status:'active',added:Date.now()});S.gr=S.gr.filter(x=>x.id!==id);toast('Added to inventory. Please update its expiry date.')}};
+const noRender=['add','gadd','help','bell','asound','anotify','atest','close','edit','theme','toss','del','wdel','yes'];
+document.addEventListener('click',e=>{
+const go=e.target.closest('[data-go]');if(go){navigate(go.dataset.go);return}
+const b=e.target.closest('[data-a]');if(!b)return;const fn=actions[b.dataset.a];if(!fn)return;
+if(b.dataset.a==='eat')celebrate(e.clientX,e.clientY);fn(b.dataset.id);if(!noRender.includes(b.dataset.a)){save();render()}});
+$('#modal').addEventListener('click',e=>{const m=e.currentTarget;if(e.target!==m)return;const r=m.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)m.close()});
+document.addEventListener('input',e=>{if(e.target.id==='search'){filter.q=e.target.value;const p=e.target.selectionStart;render();const x=$('#search');x.focus();x.setSelectionRange(p,p)}});
+document.addEventListener('change',e=>{if(e.target.id==='category'){filter.cat=e.target.value;render()}if(e.target.id==='sort'){filter.sort=e.target.value;render()}});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(pages[h]&&h!==current)navigate(h,true)});
+setTheme(lsGet(TKEY)||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));
+const h0=location.hash.slice(1);if(pages[h0])current=h0;render();
+/* splash */
+const sp=$('#sp'),title=sp.querySelector('h1');
+'FoodWise'.split('').forEach((c,i)=>{const b=document.createElement('b');b.textContent=c;b.style.animationDelay=(2+i*.08)+'s';title.appendChild(b)});
+let ended=false;const end=()=>{if(ended)return;ended=true;sp.classList.add('out');setTimeout(()=>sp.remove(),950);setTimeout(checkAlarm,1100)};setInterval(checkAlarm,60000);
+sp.addEventListener('click',end);setTimeout(end,4000);
+})();
+</script>
+</body>
+</html>
